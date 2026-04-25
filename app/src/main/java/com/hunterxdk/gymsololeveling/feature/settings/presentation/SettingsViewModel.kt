@@ -24,7 +24,7 @@ class SettingsViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val sessionManager: SessionManager,
     private val exerciseRepository: ExerciseRepository,
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
 ) : ViewModel() {
 
     val isDarkTheme = prefsDataStore.isDarkTheme

@@ -123,7 +123,7 @@ private fun BadgeCard(badge: AchievementService.BadgeProgress) {
                 style = MaterialTheme.typography.labelMedium,
             )
             Text(
-                text = if (unlocked) badge.currentTier!!.name else "Locked",
+                text = if (unlocked) badge.currentTier.name else "Locked",
                 style = MaterialTheme.typography.bodySmall,
                 color = if (unlocked) GoldAccent else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
             )

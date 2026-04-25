@@ -18,7 +18,7 @@ object DatabaseModule {
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): GymLevelsDatabase =
         Room.databaseBuilder(context, GymLevelsDatabase::class.java, "gymlevels.db")
-            .fallbackToDestructiveMigration()
+            .fallbackToDestructiveMigration(dropAllTables = true)
             .build()
 
     @Provides fun provideExerciseDao(db: GymLevelsDatabase) = db.exerciseDao()
