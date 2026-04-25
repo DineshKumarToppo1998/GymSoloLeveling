@@ -18,7 +18,7 @@ class PlayerStatsRepository @Inject constructor(
 ) {
     val stats: Flow<PlayerStats?> = callbackFlow {
         val uid = FirebaseAuth.getInstance().currentUser?.uid
-            ?: run { trySend(null); return@callbackFlow }
+            ?: run { trySend(null); awaitClose {}; return@callbackFlow }
 
         val listener = firestore.collection("users").document(uid)
             .addSnapshotListener { snap, _ ->
