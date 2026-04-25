@@ -122,19 +122,9 @@ class AchievementService @Inject constructor() {
                 BadgeType.SPECIAL -> 0
             }
 
-            val nextThreshold = nextDef?.let { def ->
-                when (type) {
-                    BadgeType.MILESTONE -> 10
-                    BadgeType.CONSISTENCY -> 7
-                    BadgeType.PR_HUNTER -> 10
-                    BadgeType.VOLUME -> 100_000
-                    BadgeType.EXPLORER -> 50
-                    BadgeType.STRENGTH -> 20
-                    else -> null
-                }
-            }
+            val nextThreshold = nextDef?.threshold
 
-            val progress = if (nextDef != null && nextThreshold != null && nextThreshold > 0) {
+            val progress = if (nextThreshold != null && nextThreshold > 0) {
                 (currentValue.toFloat() / nextThreshold).coerceIn(0f, 1f)
             } else 1f
 

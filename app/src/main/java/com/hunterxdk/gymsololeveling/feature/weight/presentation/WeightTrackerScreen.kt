@@ -35,7 +35,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -100,15 +102,15 @@ fun WeightTrackerScreen(
 
             LazyColumn {
                 items(uiState.entries, key = { it.id }) { entry ->
+                    val dismissState = rememberSwipeToDismissBoxState()
+                    LaunchedEffect(dismissState.currentValue) {
+                        if (dismissState.currentValue == SwipeToDismissBoxValue.EndToStart) {
+                            viewModel.deleteEntry(entry)
+                        }
+                    }
                     SwipeToDismissBox(
-                        state = rememberSwipeToDismissBoxState(
-                            confirmValueChange = {
-                                if (it == SwipeToDismissBoxValue.EndToStart) {
-                                    viewModel.deleteEntry(entry)
-                                    true
-                                } else false
-                            }
-                        ),
+                        state = dismissState,
+                        enableDismissFromStartToEnd = false,
                         backgroundContent = {
                             Box(
                                 modifier = Modifier
