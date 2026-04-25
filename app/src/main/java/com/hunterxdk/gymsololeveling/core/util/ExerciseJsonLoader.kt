@@ -1,0 +1,89 @@
+package com.hunterxdk.gymsololeveling.core.util
+
+import android.content.Context
+import com.hunterxdk.gymsololeveling.core.domain.model.Exercise
+import java.util.Locale
+import java.util.zip.GZIPInputStream
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+
+object ExerciseJsonLoader {
+
+    private val json = Json { ignoreUnknownKeys = true }
+
+    private val AVAILABLE_LOCALES = setOf(
+        "ar", "ar-EG", "ar-SA", "ca", "cs", "da", "de", "de-DE", "el",
+        "en", "en-AU", "en-CA", "en-GB", "en-US", "es", "es-ES", "es-MX",
+        "fi", "fr", "fr-CA", "fr-FR", "he", "hi", "hr", "hu", "id", "it",
+        "ja", "ko", "ms", "nl", "nl-NL", "no", "pl", "pt", "pt-BR", "pt-PT",
+        "ro", "ru", "sk", "sv", "th", "tr", "uk", "vi", "zh", "zh-Hans", "zh-Hant",
+    )
+
+    fun resolveLocaleTag(systemLocale: Locale): String {
+        val full = "${systemLocale.language}-${systemLocale.country}"
+        val lang = systemLocale.language
+        return when {
+            full in AVAILABLE_LOCALES -> full
+            lang in AVAILABLE_LOCALES -> lang
+            else -> "en"
+        }
+    }
+
+    suspend fun load(context: Context, localeTag: String = "en"): List<Exercise> = withContext(Dispatchers.IO) {
+        val fileName = "exercises/exercises_$localeTag.json.gz"
+        try {
+            val inputStream = context.assets.open(fileName)
+            val text = GZIPInputStream(inputStream).bufferedReader().readText()
+            val raw = json.decodeFromString<Map<String, ExerciseRaw>>(text)
+            raw.map { (id, e) -> e.toDomain(id) }
+        } catch (e: java.io.FileNotFoundException) {
+            if (localeTag != "en") load(context, "en") else emptyList()
+        }
+    }
+}
+
+@Serializable
+private data class ExerciseRaw(
+    val name: String = "",
+    @SerialName("main_equipment") val mainEquipment: String = "bodyweight",
+    @SerialName("other_equipment") val otherEquipment: List<String> = emptyList(),
+    @SerialName("primary_muscles") val primaryMuscles: List<String> = emptyList(),
+    @SerialName("secondary_muscles") val secondaryMuscles: List<String> = emptyList(),
+    @SerialName("split_categories") val splitCategories: List<String> = emptyList(),
+    @SerialName("exercise_counter_type") val exerciseCounterType: String = "reps_and_weight",
+    @SerialName("exercise_mechanics") val exerciseMechanics: String = "compound",
+    val difficulty: Int = 1,
+    val instructions: List<String> = emptyList(),
+    val tips: List<String> = emptyList(),
+    val benefits: List<String> = emptyList(),
+    @SerialName("breathing_instructions") val breathingInstructions: String = "",
+    val keywords: List<String> = emptyList(),
+    @SerialName("metabolic_equivalent") val metabolicEquivalent: Double = 4.0,
+    @SerialName("rep_supplement") val repSupplement: String? = null,
+    @SerialName("youtube_video_id") val youtubeVideoId: String? = null,
+) {
+    fun toDomain(id: String) = com.hunterxdk.gymsololeveling.core.domain.model.Exercise(
+        id = id,
+        name = name,
+        mainEquipment = mainEquipment,
+        otherEquipment = otherEquipment,
+        primaryMuscles = primaryMuscles,
+        secondaryMuscles = secondaryMuscles,
+        splitCategories = splitCategories,
+        exerciseCounterType = exerciseCounterType,
+        exerciseMechanics = exerciseMechanics,
+        difficulty = difficulty,
+        instructions = instructions,
+        tips = tips,
+        benefits = benefits,
+        breathingInstructions = breathingInstructions,
+        keywords = keywords,
+        metabolicEquivalent = metabolicEquivalent,
+        repSupplement = repSupplement,
+        isCustom = false,
+        youtubeVideoId = youtubeVideoId,
+    )
+}
