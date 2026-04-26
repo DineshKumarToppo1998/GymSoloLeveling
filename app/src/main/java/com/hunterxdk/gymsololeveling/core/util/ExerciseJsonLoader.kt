@@ -33,10 +33,17 @@ object ExerciseJsonLoader {
     }
 
     suspend fun load(context: Context, localeTag: String = "en"): List<Exercise> = withContext(Dispatchers.IO) {
-        val fileName = "exercises/exercises_$localeTag.json.gz"
+        // AAPT2 decompresses .gz assets and strips the extension at build time,
+        // so the file is stored as exercises_en.json in the APK.
+        // Try plain JSON first, fall back to gzip for local dev/test scenarios.
+        val jsonFile = "exercises/exercises_$localeTag.json"
+        val gzFile   = "exercises/exercises_$localeTag.json.gz"
         try {
-            val inputStream = context.assets.open(fileName)
-            val text = GZIPInputStream(inputStream).bufferedReader().readText()
+            val text = try {
+                context.assets.open(jsonFile).bufferedReader().readText()
+            } catch (e: java.io.FileNotFoundException) {
+                GZIPInputStream(context.assets.open(gzFile)).bufferedReader().readText()
+            }
             val raw = json.decodeFromString<Map<String, ExerciseRaw>>(text)
             raw.map { (id, e) -> e.toDomain(id) }
         } catch (e: java.io.FileNotFoundException) {

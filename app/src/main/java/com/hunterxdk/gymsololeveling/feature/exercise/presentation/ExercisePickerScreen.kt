@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -56,6 +57,7 @@ fun ExercisePickerScreen(
 ) {
     val exercises by viewModel.exercises.collectAsStateWithLifecycle()
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
+    val isSeeding by viewModel.isSeeding.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
@@ -97,7 +99,16 @@ fun ExercisePickerScreen(
                 HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant)
             }
 
-            if (exercises.isEmpty()) {
+            if (isSeeding) {
+                item {
+                    Box(
+                        Modifier.fillParentMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                }
+            } else if (exercises.isEmpty()) {
                 item {
                     Box(
                         Modifier.fillParentMaxSize(),

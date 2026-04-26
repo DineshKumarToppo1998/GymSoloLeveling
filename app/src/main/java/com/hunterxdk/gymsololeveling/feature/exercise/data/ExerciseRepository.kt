@@ -30,12 +30,18 @@ class ExerciseRepository @Inject constructor(
         val systemLocale = Locale.getDefault()
         val resolvedLocale = if (prefLocale?.isNotBlank() == true) prefLocale
                               else ExerciseJsonLoader.resolveLocaleTag(systemLocale)
+        android.util.Log.d("ExerciseSeed", "resolvedLocale=$resolvedLocale lastSeedLocale=$lastSeedLocale count=${exerciseDao.count()}")
 
-        if (lastSeedLocale == resolvedLocale && exerciseDao.count() > 0) return@withContext
+        if (lastSeedLocale == resolvedLocale && exerciseDao.count() > 0) {
+            android.util.Log.d("ExerciseSeed", "skipping — already seeded")
+            return@withContext
+        }
 
         val exercises = ExerciseJsonLoader.load(context, resolvedLocale)
+        android.util.Log.d("ExerciseSeed", "loaded ${exercises.size} exercises from asset")
         exerciseDao.clearNonCustom()
         exerciseDao.insertAll(exercises.map { it.toEntity(json) })
+        android.util.Log.d("ExerciseSeed", "inserted — count now ${exerciseDao.count()}")
         prefs.setLastSeedLocale(resolvedLocale)
     }
 
