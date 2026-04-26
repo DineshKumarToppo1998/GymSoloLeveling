@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "869226234463",
+    "project_id": "gymsololeveling",
+    "storage_bucket": "gymsololeveling.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:869226234463:android:ce8ecf75754fb1bff0d1ea",
+        "android_client_info": {
+          "package_name": "com.hunterxdk.gymsololeveling"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "869226234463-dg6g4mj3kk7df76dojetmh0o5o5tbjvp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "ENTER-API-KEY-HERE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "869226234463-dg6g4mj3kk7df76dojetmh0o5o5tbjvp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
